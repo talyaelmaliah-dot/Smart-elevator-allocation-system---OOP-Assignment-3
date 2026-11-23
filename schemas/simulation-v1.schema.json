@@ -1,0 +1,85 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Smart Elevator simulation scenario v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "building", "timing", "traffic"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "building": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["floor_count", "lobby_floor", "elevators"],
+      "properties": {
+        "floor_count": {"type": "integer", "minimum": 2},
+        "lobby_floor": {"$ref": "#/$defs/floor"},
+        "elevators": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/elevator"}
+        }
+      }
+    },
+    "timing": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["travel_ms_per_floor", "door_dwell_ms"],
+      "properties": {
+        "travel_ms_per_floor": {"type": "integer", "minimum": 1},
+        "door_dwell_ms": {"type": "integer", "minimum": 1}
+      }
+    },
+    "traffic": {
+      "oneOf": [
+        {"$ref": "#/$defs/generatedTraffic"},
+        {"$ref": "#/$defs/explicitTraffic"}
+      ]
+    }
+  },
+  "$defs": {
+    "floor": {"type": "integer", "minimum": 0},
+    "id": {"type": "string", "minLength": 1},
+    "elevator": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "start_floor", "capacity"],
+      "properties": {
+        "id": {"$ref": "#/$defs/id"},
+        "start_floor": {"$ref": "#/$defs/floor"},
+        "capacity": {"type": "integer", "minimum": 1}
+      }
+    },
+    "request": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "requested_at_ms", "origin", "destination"],
+      "properties": {
+        "id": {"$ref": "#/$defs/id"},
+        "requested_at_ms": {"type": "integer", "minimum": 0},
+        "origin": {"$ref": "#/$defs/floor"},
+        "destination": {"$ref": "#/$defs/floor"}
+      }
+    },
+    "generatedTraffic": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mode", "profile", "seed", "request_count", "duration_ms"],
+      "properties": {
+        "mode": {"const": "generated"},
+        "profile": {"enum": ["random", "morning_rush", "evening_rush", "mixed"]},
+        "seed": {"type": "integer", "minimum": 0},
+        "request_count": {"type": "integer", "minimum": 0},
+        "duration_ms": {"type": "integer", "minimum": 1}
+      }
+    },
+    "explicitTraffic": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mode", "requests"],
+      "properties": {
+        "mode": {"const": "explicit"},
+        "requests": {"type": "array", "items": {"$ref": "#/$defs/request"}}
+      }
+    }
+  }
+}
