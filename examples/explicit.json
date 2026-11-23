@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "building": {
+    "floor_count": 4,
+    "lobby_floor": 0,
+    "elevators": [{"id": "E1", "start_floor": 0, "capacity": 2}]
+  },
+  "timing": {"travel_ms_per_floor": 1000, "door_dwell_ms": 500},
+  "traffic": {
+    "mode": "explicit",
+    "requests": [
+      {"id": "R1", "requested_at_ms": 0, "origin": 0, "destination": 3}
+    ]
+  }
+}
